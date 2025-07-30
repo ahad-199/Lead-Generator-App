@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Email Extractor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .light-mode {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .light-mode .container {
+            background: #fff;
+            color: #000;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            margin-top: 15px;
+            display: block;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .toggle-mode {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2c2c2c;
+            border: 2px solid #555;
+            color: #ffdd57;
+            border-radius: 50%;
+            font-size: 20px;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+
+        .toggle-mode:hover {
+            background: #3a3a3a;
+            transform: rotate(15deg);
+        }
+
+        .light-mode .toggle-mode {
+            background: #e0e0e0;
+            border-color: #ccc;
+            color: #333;
+        }
+
+        .toggle-icon {
+            transition: color 0.3s;
+        }
+
+
+        .light-mode .toggle-icon {
+            color: #333;
+        }
+
+
+        .form-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .email-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .email-table th,
+        .email-table td {
+            border: 1px solid #444;
+            padding: 10px;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 15px;
+            background: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="toggle-mode" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+        <span class="toggle-icon" id="darkModeIcon">☀️</span>
+    </button>
+
+
+    <div class="container">
+        <h1>Email Extractor Dashboard</h1>
+
+        <label for="option">Choose Input Type:</label>
+        <select id="option" onchange="toggleForms(this.value)">
+            <option value="">-- Select --</option>
+            <option value="file">Upload File</option>
+            <option value="manual">Single Website</option>
+            <option value="location">By City/Country</option>
+        </select>
+
+        <form id="file-form" class="form-section" method="POST" action="/extract_file" enctype="multipart/form-data">
+            <label>Upload File (.txt, .csv, .xlsx):</label>
+            <input type="file" name="file" required />
+            <button type="submit">Search</button>
+        </form>
+
+        <form id="manual-form" class="form-section" method="POST" action="/extract_manual">
+            <label>Enter Website URL:</label>
+            <input type="text" name="manual_url" placeholder="https://example.com" required />
+            <button type="submit">Search</button>
+        </form>
+
+        <form id="location-form" class="form-section" method="POST" action="/extract_location">
+            <label>Enter Service:</label>
+            <input type="text" name="service" required />
+            <label>Enter Country:</label>
+            <input type="text" name="country" required />
+            <label>Enter City:</label>
+            <input type="text" name="city" required />
+            <button type="submit">Search</button>
+        </form>
+
+        {% if emails %}
+        <h2>Results</h2>
+        <table class="email-table">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Website</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in emails %}
+                <tr>
+                    <td>{{ item.email }}</td>
+                    <td><a href="{{ item.source }}" target="_blank">{{ item.source }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a class="download-link" href="/download">📥 Download Excel</a>
+        {% elif searched %}
+        <p>No emails found.</p>
+        {% endif %}
+    </div>
+
+
+    <script>
+        function toggleForms(value) {
+            document.getElementById("file-form").style.display = value === 'file' ? "block" : "none";
+            document.getElementById("manual-form").style.display = value === 'manual' ? "block" : "none";
+            document.getElementById("location-form").style.display = value === 'location' ? "block" : "none";
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            const icon = document.getElementById("darkModeIcon");
+            body.classList.toggle('light-mode');
+            icon.textContent = body.classList.contains('light-mode') ? '🌙' : '☀️';
+        }
+    </script>
+
+
+
+</body>
+
+</html>
