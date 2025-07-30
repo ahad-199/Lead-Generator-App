@@ -33,5 +33,11 @@ A Flask-based web dashboard that helps you generate leads by extracting emails f
 ---
 ## 📸 Demo Screenshots
 
+### 🔹 Dashboard View
 ![Dashboard](Img/UserInterface.png)
+
+### 🔹 Extracted Results Table
+![Results Table](Img/Results.PNG)
+
+
 
